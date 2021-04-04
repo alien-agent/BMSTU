@@ -1,0 +1,46 @@
+#lang racket
+; task 1
+(define (count x xs)
+  (cond [(empty? xs) 0]
+        [(= x (first xs)) (+ 1 (count x (rest xs)))]
+        [else (count x (rest xs))]))
+; task 2
+(define (delete pred? xs)
+  (if (null? xs)
+      '()
+      (if (pred? (car xs))
+          (delete pred? (cdr xs))
+          (cons (car xs) (delete pred? (cdr xs))))))
+; task 3
+(define (iterate f x n)
+  (if (< n 1) '()
+      (cons x (iterate f (f x) (- n 1)))))
+; task 4
+(define (intersperse e xs)
+  (cond ((null? xs) '())
+        ((= (length xs) 1) xs)
+        ((not (= (length xs) 0))
+         (append (append (list (car xs)) (list e))
+                 (intersperse e (cdr xs))))))
+; task 5
+(define (any? pred? xs)
+  (and (not (empty? xs))
+       (or (pred? (first xs)) (any? pred? (rest xs)))))
+
+(define (all? pred? xs)
+  (or (empty? xs)
+      (and (pred? (first xs)) (all? pred? (rest xs)))))
+; task 6
+(define (f x) (+ x 2))
+(define (g x) (* x 3))
+(define (h x)   (- x))
+
+(define (o . args)
+  (helper args))
+
+(define (helper args)
+  (lambda (x)
+    (cond ((null? args)  x)
+          (else ((helper (cdr args)) ((car args) x))))))
+
+

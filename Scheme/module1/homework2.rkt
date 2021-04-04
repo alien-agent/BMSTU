@@ -1,0 +1,169 @@
+#lang racket
+
+#! task 1.1
+(define (my-range a b step)
+  (if (>= a b)
+      null
+      (cons a (my-range (+ step a) b step))))
+#! task 1.2
+(define (my-flatten lst)
+  (cond ((null? lst) '())
+        ((pair? lst)
+         (append (my-flatten (car lst)) (my-flatten (cdr lst))))
+        (else (list lst))))
+#! task 1.3
+(define (my-element? x xs)
+  (cond
+    ((empty? xs) #f)
+    ((eqv? x (car xs)) #t)
+    (else(my-element? x (cdr xs)))))
+#! task 1.4
+(define (my-filter pred? xs)
+  (cond [(empty? xs) empty]
+        [(pred? (first xs))
+         (cons (first xs) (my-filter pred? (rest xs)))]
+        [else (my-filter pred? (rest xs))]))
+#! task 1.5
+(define (my-fold-left op init xs)
+  (cond [(empty? xs) init]
+        [else (my-fold-left op (op (first xs) init) (rest xs))]))
+#! task 1.6
+(define (my-fold-right op init xs)
+  (cond [(empty? xs) init]
+        [else (op (first xs) (my-fold-right op init (rest xs)))]))
+#! task 2.1
+(define (list->set xs)
+  (cond
+    ((empty? xs) '())
+    ((my-element? (car xs) (cdr xs)) (list->set (cdr xs)))
+    (my-element? (car xs) (set (cdr xs)) (append (list->set (cdr xs)) (list (car xs))))))
+#! task 2.2
+(define (set? xs)
+  (if (not (null? xs))
+      (begin
+        (if (not (null? (cdr xs)))
+            (begin
+              (do ((x xs (cdr x)))
+                ((or (null? (cdr x)) (equal? (car x) (car (cdr x)))) 
+                 (if (null? (cdr x))
+                     #t
+                     #f))))
+            #t))
+      #t))
+#! task 2.3
+(define (union xs ys)
+  (cond
+    ((empty? xs) ys)
+    ((empty? ys) xs)
+    ((my-element? (car ys) xs) (union xs (cdr ys)))
+    (else (union (append (list (car ys)) xs) (cdr ys)))))
+#! task 2.4
+(define (intersection xs ys)
+  (cond
+    ((empty? xs) '())
+    ((empty? ys) '())
+    ((my-element? (car xs) ys) (append (list (car xs)) (intersection (cdr xs) (remove (car xs) ys))))
+    (else (intersection (remove (car xs) xs) ys))))
+#! task 2.5
+(define (difference xs ys)
+  (cond
+    ((empty? xs) '())
+    ((empty? ys) xs)
+    ((my-element? (car xs) ys) (difference (remove (car xs) xs) ys))
+    ((cons (car xs) (difference (cdr xs) ys)))))
+#! task 2.6
+(define (symmetric-difference xs ys)
+  (union (difference xs ys) (difference ys xs)))
+#! task 2.7
+(define (set-eq? xs ys) (if (and
+                             (empty? (difference xs ys))
+                             (empty? (difference ys xs))) #t #f))
+#! task 3.1 trim-left/trim-right/trim
+(define (string-trim-left str)
+  (if (or (equal? (car (string->list str)) #\tab) (equal? (car (string->list str)) #\newline) (equal? (car (string->list str)) #\space))
+      (string-trim-left (list->string (cdr (string->list str))))
+      str))
+
+(define (string-trim-right str)
+  (if (or (equal? (car (reverse (string->list str))) #\tab) (equal? (car (reverse (string->list str))) #\newline) (equal? (car (reverse (string->list str))) #\space))
+      (string-trim-right (list->string (reverse (cdr (reverse (string->list str))))))
+      (list->string (string->list str))))
+
+
+(define (string-trim str)
+  (string-trim-right (string-trim-left str)))
+#! task 3.2 prefix/suffix/infix
+(define (list-prefix a b)
+(cond ((null? a) #t)
+((eq? (car a) (car b)) (list-prefix (cdr a) (cdr b)))
+(#t #f)))
+
+(define (list-suffix a b) (list-prefix (reverse a) (reverse b)))
+
+(define (list-infix a b)
+(cond ((null? b) #f)
+((list-prefix a b) #t)
+(#t (list-infix a (cdr b)))))
+
+(define (string-prefix sa sb)
+  (if (> (string-length sa) (string-length sb)) #f
+(list-prefix (string->list sa) (string->list sb))))
+
+(define (string-suffix sa sb)
+  (if (> (string-length sa) (string-length sb)) #f
+(list-suffix (string->list sa) (string->list sb))))
+
+(define (string-infix sa sb)                
+(list-infix (string->list sa) (string->list sb)))
+#! task 3.3 string split
+
+#! task 4.1 make-multi-vector
+(define fill 0)
+(define (make-multi-vector sizes . args)
+  (if (not (null? args))
+      (begin
+        (set! fill (car args))
+        (make-multi-vector+ sizes fill))
+      (if (not (null? sizes))
+          (cons (make-vector (car sizes)) (make-multi-vector (cdr sizes)))
+          '())))
+(define (make-multi-vector+ sizes fill)
+  (if (not (null? sizes))
+      (cons (make-vector (car sizes) fill) (make-multi-vector (cdr sizes) fill))
+      '()))
+#! task 4.2 is multi vector?
+(define (multi-vector? m)
+  (if (list? m)
+      (if (and (vector? (car m)) (vector? (car (cdr m))))
+          (= 1 1)
+          (= 1 2))
+      (= 1 2)))
+#! task 4.3 set multi vector value
+(define (multi-vector-set! m indices x)
+  (if (or (not (null? indices)) (not (null? m)))
+      (if (list? m)
+          (cons (vector-set! (car m) (car indices) x) (multi-vector-set! (cdr m) (cdr indices) x))
+          '())
+      '()))
+#! task 4.4 get multi vector value
+(define (multi-vector-ref m indices)
+  (if (or (not (null? (cdr indices))) (not (null? (cdr m))))
+      (if (list? m)
+          (multi-vector-ref (cdr m) (cdr indices)) '())
+          '())
+      (vector-ref (car m) (car indices)))
+#! task 5 compose functions
+(define (f x) (+ x 2))
+(define (g x) (* x 3))
+(define (h x)   (- x))
+
+(define (del_last args)
+  (reverse (cdr (reverse args))))
+
+(define (composition args)
+  (lambda (x)
+    (cond ((null? args)  x)
+          (else ((composition (del_last args)) ((last args) x))))))
+
+(define (o . args)
+  (composition args))
