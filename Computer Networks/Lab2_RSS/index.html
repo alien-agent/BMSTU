@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{.Title}}</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+    <style>
+        .block-with-text {
+            overflow: hidden;
+            position: relative;
+            line-height: 1.2em;
+            max-height: 5em;
+            text-align: justify;
+            margin-right: -1em;
+            padding-right: 1em;
+        }
+        .block-with-text:before {
+            content: '...';
+            position: absolute;
+            right: 0;
+            bottom: 0;
+        }
+        .block-with-text:after {
+            content: '';
+            position: absolute;
+            right: 0;
+            width: 1em;
+            height: 1em;
+            margin-top: 0.2em;
+            background: white;
+        }
+    </style>
+</head>
+<body>
+
+<nav>
+    <div class="nav-wrapper">
+        <a href="{{.Link}}" class="brand-logo center">{{.Title}}</a>
+        <ul id="nav-mobile" class="left hide-on-med-and-down">
+            <li><a href="blagnews">BlagNews</a></li>
+            <li><a href="lenta">Lenta</a></li>
+            <li><a href="vz">VZ.ru</a></li>
+        </ul>
+    </div>
+</nav>
+
+<div class="container">
+    {{range .Items}}
+    <div class="card medium">
+        <div class="card-image">
+            <img src="{{ with (index .Enclosures 0) }} {{ .URL }} {{ end }}">
+            <span class="card-title">{{.Title}}</span>
+        </div>
+        <div class="card-content">
+            <p class="block-with-text">{{.Description}}</p>
+        </div>
+        <div class="card-action">
+            <a href="{{.Link}}" target="_blank">Visit</a>
+            <a class="right">{{.Published}}</a>
+        </div>
+    </div>
+    {{end}}
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+
+</body>
+</html>

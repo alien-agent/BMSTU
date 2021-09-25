@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Latest cryptocurrency rates </title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+</head>
+<body>
+
+<nav>
+    <div class="nav-wrapper">
+        <a href="https://investfunds.ru/crypto/" class="brand-logo center">Latest cryptocurrency rates </a>
+    </div>
+</nav>
+
+<div class="fixed-action-btn">
+    <a class="btn-floating btn-large red" href="">
+        <i class="large material-icons">sync</i>
+    </a>
+</div>
+
+<div class="container">
+    {{- /*gotype: LabCrypto.DataItem*/ -}}
+    {{if .}}
+    <table class="centered highlight">
+        <thead>
+        <th>Валюта</th>
+        <th>Код</th>
+        <th>Капитализация, млн USD</th>
+        <th>Цена, USD</th>
+        <th>Обновлено</th>
+        </thead>
+        <tbody>
+        {{range .}}
+        <tr>
+            <td>{{.Name}}</td>
+            <td>{{.Code}}</td>
+            <td>{{.Capitalization}}</td>
+            <td>{{.Price}}</td>
+            <td>{{.TimeUpdated}}</td>
+        </tr>
+        {{end}}
+        </tbody>
+    </table>
+    {{else}}
+    <h1 class="center">UNABLE TO FETCH DATA</h1>
+    {{end}}
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+
+</body>
+</html>
